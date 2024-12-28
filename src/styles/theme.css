@@ -1,0 +1,23 @@
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --secondary-bg: #fff9e6;
+  --accent-color: #8bc34a;
+}
+
+[data-theme='dark'] {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --secondary-bg: #1e1e1e;
+  --accent-color: #8bc34a;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+button {
+  background-color: var(--accent-color);
+  color: var(--texat-color);
+}
