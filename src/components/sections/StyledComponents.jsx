@@ -2,12 +2,12 @@ import { styled } from '@mui/material/styles';
 import { Box, Typography, Card } from '@mui/material';
 
 export const Section = styled('section')(({ theme }) => ({
-  padding: theme.spacing(10, 0),
-  background: theme.palette.mode === 'light' 
-    ? '#FFFFFF'
-    : theme.palette.background.default,
-  [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(6, 0),
+  padding: theme.spacing(10, 0),  // Adds vertical padding of 10 units on large screens
+  background: theme.palette.mode === 'light'  // Sets background color based on theme mode
+    ? '#FFFFFF'  // White background in light mode
+    : theme.palette.background.default,  // Default background in dark mode
+  [theme.breakpoints.down('sm')]: {  // Responsive styling for small screens
+    padding: theme.spacing(6, 0),  // Reduces vertical padding to 6 units on small screens
   },
 }));
 
