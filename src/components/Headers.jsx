@@ -97,7 +97,7 @@ const Headers = () => {
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <Box sx={{ my: 2, display: 'flex', justifyContent: 'center' }}>
         <Logo 
-          src="/placemakers-logo.svg" 
+          src="/placemakers/placemakers-logo.svg" 
           alt="Place Makers" 
           sx={{ 
             height: '60px',
@@ -169,7 +169,7 @@ const Headers = () => {
                 onClick={() => scrollToSection('home')}
               >
                 <Logo 
-                  src="/placemakers-logo.svg" 
+                  src="/placemakers/placemakers-logo.svg" 
                   alt="Place Makers"
                   sx={{
                     height: { xs: '40px', sm: '50px' },
