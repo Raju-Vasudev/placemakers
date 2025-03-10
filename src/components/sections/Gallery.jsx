@@ -6,6 +6,8 @@ import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { styled } from '@mui/material/styles';
+import { getGalleryImages } from '../../utils/galleryUtils';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
 const StyledCarouselImage = styled('img')(({ theme }) => ({
   width: '100%',
@@ -15,67 +17,54 @@ const StyledCarouselImage = styled('img')(({ theme }) => ({
   transition: 'transform 0.3s ease-out',
 }));
 
-const galleryImages = [
-  {
-    title: "DevOps Pipeline",
-    src: "images/gallery/DevOps.png",
-    gradient: "linear-gradient(45deg, #FF6B6B, #4ECDC4)"
-  },
-  {
-    title: "AI ML Deep Learning",
-    src: "images/gallery/AI-ML-DL-NN Relation.png",
-    gradient: "linear-gradient(45deg, #6C5B7B, #C06C84)"
-  },
-  {
-    title: "Project Repository",
-    src: "images/gallery/AI Project github URL.png",
-    gradient: "linear-gradient(45deg, #355C7D, #6C5B7B)"
-  },
-  {
-    title: "System Architecture",
-    src: "images/gallery/Screenshot 2025-03-10 at 10.23.39.png",
-    gradient: "linear-gradient(45deg, #2C3E50, #3498DB)"
-  },
-  {
-    title: "Project Dashboard",
-    src: "images/gallery/Screenshot 2025-03-06 at 15.43.21.png",
-    gradient: "linear-gradient(45deg, #16A085, #F4D03F)"
-  },
-  {
-    title: "Development Process",
-    src: "images/gallery/Screenshot 2025-03-06 at 08.44.38.png",
-    gradient: "linear-gradient(45deg, #D4145A, #FBB03B)"
-  },
-  {
-    title: "Project Overview",
-    src: "images/gallery/Screenshot 2025-03-05 at 21.51.10.png",
-    gradient: "linear-gradient(45deg, #009688, #4CAF50)"
-  }
-];
-
 const Gallery = () => {
   const [isGridView, setIsGridView] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [error, setError] = useState(null);
 
-  const handleNext = useCallback(() => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % galleryImages.length);
+  useEffect(() => {
+    const loadGalleryImages = () => {
+      try {
+        const images = getGalleryImages();
+        setGalleryImages(images);
+        if (images.length === 0) {
+          setError('No images found in the gallery directory');
+        } else {
+          setError(null);
+        }
+      } catch (err) {
+        console.error('Error loading gallery images:', err);
+        setError('Error loading gallery images. Please check the console for details.');
+      }
+    };
+
+    loadGalleryImages();
   }, []);
 
+  const handleNext = useCallback(() => {
+    if (galleryImages.length > 0) {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % galleryImages.length);
+    }
+  }, [galleryImages.length]);
+
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + galleryImages.length) % galleryImages.length);
+    if (galleryImages.length > 0) {
+      setCurrentIndex((prevIndex) => (prevIndex - 1 + galleryImages.length) % galleryImages.length);
+    }
   };
 
-  // Auto-play functionality with faster timing
+  // Auto-play functionality
   useEffect(() => {
-    if (!isGridView && !isPaused) {
+    if (!isGridView && !isPaused && galleryImages.length > 0) {
       const timer = setInterval(() => {
         handleNext();
-      }, 1000); // Change slide every 1000ms
+      }, 3000); // Change slide every 3 seconds
 
       return () => clearInterval(timer);
     }
-  }, [isGridView, isPaused, handleNext]);
+  }, [isGridView, isPaused, handleNext, galleryImages.length]);
 
   const CarouselView = () => (
     <Box
@@ -93,104 +82,111 @@ const Gallery = () => {
         sx={{
           height: '100%',
           position: 'relative',
-          background: galleryImages[currentIndex].gradient,
+          background: galleryImages[currentIndex]?.gradient || 'linear-gradient(45deg, #f3f3f3, #e0e0e0)',
           transition: 'all 0.3s ease-out',
         }}
       >
-        <StyledCarouselImage
-          src={galleryImages[currentIndex].src}
-          alt={galleryImages[currentIndex].title}
-          onError={(e) => {
-            e.target.style.display = 'none';
-            e.target.parentElement.style.background = galleryImages[currentIndex].gradient;
-          }}
-        />
-        <Paper
-          elevation={0}
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(10px)',
-            color: 'white',
-            padding: 2,
-          }}
-        >
-          <Typography variant="h6" align="center">
-            {galleryImages[currentIndex].title}
-          </Typography>
-        </Paper>
+        {galleryImages[currentIndex] && (
+          <>
+            <StyledCarouselImage
+              src={galleryImages[currentIndex].src}
+              alt={galleryImages[currentIndex].title}
+              onError={(e) => {
+                console.error(`Error loading image: ${galleryImages[currentIndex].src}`);
+                e.target.style.display = 'none';
+                e.target.parentElement.style.background = galleryImages[currentIndex].gradient;
+              }}
+            />
+            <Paper
+              elevation={0}
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: 'rgba(0,0,0,0.5)',
+                backdropFilter: 'blur(10px)',
+                color: 'white',
+                padding: 2,
+              }}
+            >
+              <Typography variant="h6" align="center">
+                {galleryImages[currentIndex].title}
+              </Typography>
+            </Paper>
+          </>
+        )}
       </Box>
 
-      {/* Navigation Arrows */}
-      <IconButton
-        sx={{
-          position: 'absolute',
-          left: 16,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          bgcolor: 'rgba(255,255,255,0.3)',
-          backdropFilter: 'blur(4px)',
-          '&:hover': {
-            bgcolor: 'rgba(255,255,255,0.4)',
-          },
-        }}
-        onClick={handlePrev}
-      >
-        <ArrowBackIcon sx={{ color: 'white' }} />
-      </IconButton>
-
-      <IconButton
-        sx={{
-          position: 'absolute',
-          right: 16,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          bgcolor: 'rgba(255,255,255,0.3)',
-          backdropFilter: 'blur(4px)',
-          '&:hover': {
-            bgcolor: 'rgba(255,255,255,0.4)',
-          },
-        }}
-        onClick={handleNext}
-      >
-        <ArrowForwardIcon sx={{ color: 'white' }} />
-      </IconButton>
-
-      {/* Dots Indicator */}
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: 80,
-          left: 0,
-          right: 0,
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 1,
-          zIndex: 1,
-        }}
-      >
-        {galleryImages.map((_, index) => (
-          <Box
-            key={index}
-            onClick={() => setCurrentIndex(index)}
+      {galleryImages.length > 1 && (
+        <>
+          <IconButton
             sx={{
-              width: 12,
-              height: 12,
-              borderRadius: '50%',
-              bgcolor: index === currentIndex ? 'white' : 'rgba(255,255,255,0.5)',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
+              position: 'absolute',
+              left: 16,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              bgcolor: 'rgba(255,255,255,0.3)',
+              backdropFilter: 'blur(4px)',
               '&:hover': {
-                transform: 'scale(1.2)',
-                bgcolor: 'white',
+                bgcolor: 'rgba(255,255,255,0.4)',
               },
             }}
-          />
-        ))}
-      </Box>
+            onClick={handlePrev}
+          >
+            <ArrowBackIcon sx={{ color: 'white' }} />
+          </IconButton>
+
+          <IconButton
+            sx={{
+              position: 'absolute',
+              right: 16,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              bgcolor: 'rgba(255,255,255,0.3)',
+              backdropFilter: 'blur(4px)',
+              '&:hover': {
+                bgcolor: 'rgba(255,255,255,0.4)',
+              },
+            }}
+            onClick={handleNext}
+          >
+            <ArrowForwardIcon sx={{ color: 'white' }} />
+          </IconButton>
+
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 80,
+              left: 0,
+              right: 0,
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 1,
+              zIndex: 1,
+            }}
+          >
+            {galleryImages.map((_, index) => (
+              <Box
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  bgcolor: index === currentIndex ? 'white' : 'rgba(255,255,255,0.5)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'scale(1.2)',
+                    bgcolor: 'white',
+                  },
+                }}
+              />
+            ))}
+          </Box>
+        </>
+      )}
     </Box>
   );
 
@@ -244,6 +240,7 @@ const Gallery = () => {
                 src={image.src}
                 alt={image.title}
                 onError={(e) => {
+                  console.error(`Error loading image: ${image.src}`);
                   e.target.style.display = 'none';
                   e.target.parentElement.style.background = image.gradient;
                 }}
@@ -271,6 +268,32 @@ const Gallery = () => {
     </Box>
   );
 
+  const EmptyState = () => (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 2,
+        mt: 4,
+        p: 4,
+        border: '2px dashed',
+        borderColor: 'divider',
+        borderRadius: 2,
+      }}
+    >
+      <AddPhotoAlternateIcon sx={{ fontSize: 60, color: 'text.secondary' }} />
+      <Typography variant="h6" color="text.secondary" align="center">
+        {error || 'No Images in Gallery'}
+      </Typography>
+      <Typography variant="body1" color="text.secondary" align="center">
+        Add your images to the src/assets/gallery directory to display them here.
+        <br />
+        Supported formats: JPG, JPEG, PNG
+      </Typography>
+    </Box>
+  );
+
   return (
     <Section id="gallery">
       <Container>
@@ -281,20 +304,27 @@ const Gallery = () => {
           <Typography variant="h5" color="textSecondary" paragraph>
             Explore our project showcase
           </Typography>
-          <IconButton
-            onClick={() => setIsGridView(!isGridView)}
-            sx={{
-              mb: 2,
-              transition: 'transform 0.3s ease',
-              '&:hover': {
-                transform: 'scale(1.1)',
-              },
-            }}
-          >
-            {isGridView ? <ViewCarouselIcon /> : <GridViewIcon />}
-          </IconButton>
+          {galleryImages.length > 0 && (
+            <IconButton
+              onClick={() => setIsGridView(!isGridView)}
+              sx={{
+                mb: 2,
+                transition: 'transform 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.1)',
+                },
+              }}
+            >
+              {isGridView ? <ViewCarouselIcon /> : <GridViewIcon />}
+            </IconButton>
+          )}
         </Box>
-        {isGridView ? <GridViewComponent /> : <CarouselView />}
+
+        {galleryImages.length > 0 ? (
+          isGridView ? <GridViewComponent /> : <CarouselView />
+        ) : (
+          <EmptyState />
+        )}
       </Container>
     </Section>
   );
