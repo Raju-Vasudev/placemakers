@@ -150,50 +150,81 @@ const Gallery = () => {
   );
 
   const GridViewComponent = () => (
-    <Grid container spacing={2}>
-      {galleryImages.map((image, index) => (
-        <Grid item xs={12} sm={6} md={4} key={index}>
-          <Box
-            sx={{
-              height: 250,
-              borderRadius: '10px',
-              overflow: 'hidden',
-              position: 'relative',
-              background: image.gradient,
-            }}
-          >
-            <img
-              src={image.src}
-              alt={image.title}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-              onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.parentElement.style.background = image.gradient;
-              }}
-            />
-            <Typography
-              variant="subtitle1"
+    <Box
+      sx={{
+        height: '500px',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        '&::-webkit-scrollbar': {
+          width: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'rgba(0,0,0,0.1)',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: (theme) => 
+            `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
+          borderRadius: '4px',
+          '&:hover': {
+            background: (theme) => 
+              `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.secondary.dark} 90%)`,
+          },
+        },
+      }}
+    >
+      <Grid container spacing={3}>
+        {galleryImages.map((image, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Box
               sx={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                background: 'rgba(0,0,0,0.7)',
-                color: 'white',
-                padding: '10px',
-                textAlign: 'center',
+                height: 300,
+                borderRadius: '10px',
+                overflow: 'hidden',
+                position: 'relative',
+                background: image.gradient,
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.02)',
+                  boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+                },
               }}
             >
-              {image.title}
-            </Typography>
-          </Box>
-        </Grid>
-      ))}
-    </Grid>
+              <img
+                src={image.src}
+                alt={image.title}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  padding: '16px',
+                }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.parentElement.style.background = image.gradient;
+                }}
+              />
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  background: 'rgba(0,0,0,0.7)',
+                  color: 'white',
+                  padding: '10px',
+                  textAlign: 'center',
+                  backdropFilter: 'blur(4px)',
+                }}
+              >
+                {image.title}
+              </Typography>
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 
   return (
