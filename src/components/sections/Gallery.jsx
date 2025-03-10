@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Container, Typography, IconButton, Grid, Paper } from '@mui/material';
-import { Section, GradientTypography } from './StyledComponents';
+import { Section, GradientTypography, SectionSubheading, SectionHeadingWrapper } from './StyledComponents';
 import GridViewIcon from '@mui/icons-material/GridView';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -296,19 +296,19 @@ const Gallery = () => {
 
   return (
     <Section id="gallery">
-      <Container>
-        <Box textAlign="center" mb={6}>
-          <GradientTypography variant="h2" component="h2" gutterBottom>
-            Gallery
+      <Container maxWidth="lg">
+        <SectionHeadingWrapper>
+          <GradientTypography variant="h2" component="h2">
+            Our Gallery
           </GradientTypography>
-          <Typography variant="h5" color="textSecondary" paragraph>
-            Explore our project showcase
-          </Typography>
+          <SectionSubheading variant="h5">
+            Explore our portfolio of successful projects and satisfied clients
+          </SectionSubheading>
           {galleryImages.length > 0 && (
             <IconButton
               onClick={() => setIsGridView(!isGridView)}
               sx={{
-                mb: 2,
+                mt: 2,
                 transition: 'transform 0.3s ease',
                 '&:hover': {
                   transform: 'scale(1.1)',
@@ -318,7 +318,7 @@ const Gallery = () => {
               {isGridView ? <ViewCarouselIcon /> : <GridViewIcon />}
             </IconButton>
           )}
-        </Box>
+        </SectionHeadingWrapper>
 
         {galleryImages.length > 0 ? (
           isGridView ? <GridViewComponent /> : <CarouselView />

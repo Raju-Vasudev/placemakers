@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Container, Typography, CardContent, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton } from '@mui/material';
 import Grid2 from '@mui/material/Grid2';
-import { Section, ServiceCard, GradientTypography, IconWrapper } from './StyledComponents';
+import { Section, ServiceCard, GradientTypography, IconWrapper, SectionSubheading, SectionHeadingWrapper } from './StyledComponents';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CloseIcon from '@mui/icons-material/Close';
 import { servicesConfig } from '../../config/servicesConfig';
@@ -414,31 +414,14 @@ const Services = () => {
       }}
     >
       <Container maxWidth="lg">
-        <Box textAlign="center" mb={{ xs: 6, md: 8 }}>
-          <GradientTypography 
-            variant="h2" 
-            component="h2" 
-            sx={{
-              fontSize: { xs: '2rem', sm: '2.25rem', md: '2.5rem' },
-              mb: 2,
-              fontWeight: 700
-            }}
-          >
+        <SectionHeadingWrapper>
+          <GradientTypography variant="h2" component="h2">
             {servicesConfig.title}
           </GradientTypography>
-          <Typography 
-            variant="h5" 
-            color="text.secondary" 
-            sx={{
-              fontSize: { xs: '1.1rem', sm: '1.25rem' },
-              maxWidth: '800px',
-              mx: 'auto',
-              lineHeight: 1.6
-            }}
-          >
+          <SectionSubheading variant="h5">
             {servicesConfig.subtitle}
-          </Typography>
-        </Box>
+          </SectionSubheading>
+        </SectionHeadingWrapper>
         <Box 
           sx={{ 
             maxWidth: theme => ({ xs: 400, sm: 600, md: 1200 }),

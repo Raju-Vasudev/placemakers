@@ -1,21 +1,21 @@
 import React from 'react';
 import { Box, Container, Typography, Paper } from '@mui/material';
 import Grid2 from '@mui/material/Grid2';
-import { Section, GradientTypography } from './StyledComponents';
+import { Section, GradientTypography, SectionSubheading, SectionHeadingWrapper } from './StyledComponents';
 import { aboutConfig } from '../../config/aboutConfig';
 
 const About = () => {
   return (
     <Section id="about">
       <Container maxWidth="lg">
-        <Box textAlign="center" mb={6}>
-          <GradientTypography variant="h2" component="h2" gutterBottom>
+        <SectionHeadingWrapper>
+          <GradientTypography variant="h2" component="h2">
             {aboutConfig.title}
           </GradientTypography>
-          <Typography variant="h5" color="textSecondary" sx={{ mb: 2 }}>
+          <SectionSubheading variant="h5">
             {aboutConfig.subtitle}
-          </Typography>
-        </Box>
+          </SectionSubheading>
+        </SectionHeadingWrapper>
 
         <Box mb={6}>
           {aboutConfig.introduction.map((text, index) => (

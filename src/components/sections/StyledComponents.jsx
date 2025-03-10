@@ -39,6 +39,39 @@ export const GradientTypography = styled(Typography)(({ theme }) => ({
   WebkitTextFillColor: 'transparent',
   backgroundClip: 'text',
   textFillColor: 'transparent',
+  fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+  fontSize: '1.5rem !important', // Force the font size
+  fontWeight: 550,
+  lineHeight: 1.2,
+  marginBottom: '1rem',
+  [theme.breakpoints.up('sm')]: {
+    fontSize: '1.75rem !important',
+  },
+  [theme.breakpoints.up('md')]: {
+    fontSize: '3rem !important',
+  },
+}));
+
+export const SectionSubheading = styled(Typography)(({ theme }) => ({
+  fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+  fontSize: '1rem !important', // Force the font size
+  fontWeight: 300,
+  lineHeight: 1.6,
+  color: theme.palette.text.secondary,
+  marginBottom: '2rem',
+  maxWidth: '800px',
+  margin: '0 auto',
+  [theme.breakpoints.up('sm')]: {
+    fontSize: '1.1rem !important',
+  },
+  [theme.breakpoints.up('md')]: {
+    fontSize: '1.2rem !important',
+  },
+}));
+
+export const SectionHeadingWrapper = styled(Box)(({ theme }) => ({
+  textAlign: 'center',
+  marginBottom: theme.spacing(6),
 }));
 
 export const IconWrapper = styled(Box)(({ theme }) => ({

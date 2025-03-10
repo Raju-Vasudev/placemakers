@@ -18,7 +18,7 @@ import {
   IconButton,
   Zoom,
 } from '@mui/material';
-import { Section, GradientTypography } from './StyledComponents';
+import { Section, GradientTypography, SectionSubheading, SectionHeadingWrapper } from './StyledComponents';
 import SendIcon from '@mui/icons-material/Send';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -298,15 +298,15 @@ const Contact = () => {
 
   return (
     <Section id="contact">
-      <Container>
-        <Box textAlign="center" mb={6}>
-          <GradientTypography variant="h2" component="h2" gutterBottom>
+      <Container maxWidth="lg">
+        <SectionHeadingWrapper>
+          <GradientTypography variant="h2" component="h2">
             Contact Us
           </GradientTypography>
-          <Typography variant="h5" color="textSecondary" paragraph>
-            Get in touch with our team
-          </Typography>
-        </Box>
+          <SectionSubheading variant="h5">
+            Get in touch with us for any inquiries or support
+          </SectionSubheading>
+        </SectionHeadingWrapper>
         <Grid container>
           <Grid item xs={12}>
             <ContactInfo />

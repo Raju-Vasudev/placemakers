@@ -8,7 +8,7 @@ import {
   AccordionDetails,
   Grid,
 } from '@mui/material';
-import { Section, GradientTypography } from './StyledComponents';
+import { Section, GradientTypography, SectionSubheading, SectionHeadingWrapper } from './StyledComponents';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const faqs = [
@@ -48,14 +48,14 @@ const FAQ = () => {
   return (
     <Section id="faq">
       <Container>
-        <Box textAlign="center" mb={6}>
-          <GradientTypography variant="h2" component="h2" gutterBottom>
+        <SectionHeadingWrapper>
+          <GradientTypography variant="h2" component="h2">
             FAQ
           </GradientTypography>
-          <Typography variant="h5" color="textSecondary" paragraph>
+          <SectionSubheading variant="h5">
             Frequently Asked Questions
-          </Typography>
-        </Box>
+          </SectionSubheading>
+        </SectionHeadingWrapper>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             {faqs.map((faq, index) => (

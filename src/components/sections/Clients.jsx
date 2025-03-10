@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Box, Container, Typography, Card, IconButton } from '@mui/material';
-import { Section, GradientTypography } from './StyledComponents';
+import { Section, GradientTypography, SectionSubheading, SectionHeadingWrapper } from './StyledComponents';
 import { getClientLogos } from '../../utils/clientUtils';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -158,7 +158,7 @@ const Clients = () => {
         currentScroll += SCROLL_SPEED;
         
         // Reset scroll position when reaching the end of the first set
-        if (currentScroll >= scrollContainer.scrollWidth / 3) {
+        if (currentScroll >= scrollContainer.scrollWidth / 2) {
           currentScroll = 0;
         }
         
@@ -191,31 +191,14 @@ const Clients = () => {
   return (
     <Section id="clients">
       <Container maxWidth="xl">
-        <Box textAlign="center" mb={6}>
-          <GradientTypography
-            variant="h2"
-            component="h2"
-            sx={{
-              mb: 2,
-              fontSize: { xs: '2rem', sm: '2.25rem', md: '2.5rem' },
-              fontWeight: 700,
-            }}
-          >
+        <SectionHeadingWrapper>
+          <GradientTypography variant="h2" component="h2">
             Our Clients
           </GradientTypography>
-          <Typography
-            variant="h5"
-            color="textSecondary"
-            sx={{
-              fontSize: { xs: '1.1rem', sm: '1.25rem' },
-              maxWidth: '800px',
-              mx: 'auto',
-              lineHeight: 1.6,
-            }}
-          >
+          <SectionSubheading variant="h5">
             Trusted by leading organizations across industries
-          </Typography>
-        </Box>
+          </SectionSubheading>
+        </SectionHeadingWrapper>
 
         {clients.length > 0 ? (
           <Box 
