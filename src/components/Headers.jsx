@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { AppBar, Toolbar, Box, Container, IconButton, Drawer, List, ListItem, ListItemText, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { useTheme } from '../hooks/useTheme';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -64,7 +61,6 @@ const navItems = [
 ];
 
 const Headers = () => {
-  const { mode, toggleTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -187,18 +183,6 @@ const Headers = () => {
                   {item.title}
                 </StyledButton>
               ))}
-              <IconButton 
-                onClick={toggleTheme} 
-                color="inherit"
-                sx={{
-                  transition: 'transform 0.2s ease',
-                  '&:hover': {
-                    transform: 'rotate(180deg)',
-                  },
-                }}
-              >
-                {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
-              </IconButton>
             </Box>
           </StyledToolbar>
         </Container>
