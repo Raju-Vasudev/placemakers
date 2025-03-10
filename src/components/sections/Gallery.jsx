@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Container, Typography, IconButton, Grid } from '@mui/material';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Box, Container, Typography, IconButton, Grid, Paper } from '@mui/material';
 import { Section, GradientTypography } from './StyledComponents';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import GridViewIcon from '@mui/icons-material/GridView';
 import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { styled } from '@mui/material/styles';
+
+const StyledCarouselImage = styled('img')(({ theme }) => ({
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
+  padding: theme.spacing(2),
+  transition: 'transform 0.3s ease-out',
+}));
 
 const galleryImages = [
   {
@@ -45,106 +54,142 @@ const galleryImages = [
 ];
 
 const Gallery = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [isGridView, setIsGridView] = useState(false);
-  const [slideDirection, setSlideDirection] = useState('next');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSlideDirection('next');
-      setCurrentSlide((prev) => (prev + 1) % galleryImages.length);
-    }, 2500);
-    return () => clearInterval(timer);
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % galleryImages.length);
   }, []);
 
-  const handlePrevSlide = () => {
-    setSlideDirection('prev');
-    setCurrentSlide((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  const handlePrev = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + galleryImages.length) % galleryImages.length);
   };
 
-  const handleNextSlide = () => {
-    setSlideDirection('next');
-    setCurrentSlide((prev) => (prev + 1) % galleryImages.length);
-  };
+  // Auto-play functionality with faster timing
+  useEffect(() => {
+    if (!isGridView && !isPaused) {
+      const timer = setInterval(() => {
+        handleNext();
+      }, 1000); // Change slide every 1000ms
+
+      return () => clearInterval(timer);
+    }
+  }, [isGridView, isPaused, handleNext]);
 
   const CarouselView = () => (
     <Box
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
       sx={{
         position: 'relative',
         height: '500px',
-        overflow: 'hidden',
         borderRadius: '10px',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        overflow: 'hidden',
+        boxShadow: (theme) => `0 4px 20px ${theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.1)'}`,
       }}
     >
-      {galleryImages.map((image, index) => (
-        <Box
-          key={index}
+      <Box
+        sx={{
+          height: '100%',
+          position: 'relative',
+          background: galleryImages[currentIndex].gradient,
+          transition: 'all 0.3s ease-out',
+        }}
+      >
+        <StyledCarouselImage
+          src={galleryImages[currentIndex].src}
+          alt={galleryImages[currentIndex].title}
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.parentElement.style.background = galleryImages[currentIndex].gradient;
+          }}
+        />
+        <Paper
+          elevation={0}
           sx={{
             position: 'absolute',
-            width: '100%',
-            height: '100%',
-            opacity: currentSlide === index ? 1 : 0,
-            transform: `translateX(${
-              currentSlide === index
-                ? '0%'
-                : slideDirection === 'next'
-                ? '-100%'
-                : '100%'
-            })`,
-            transition: 'transform 1.5s ease, opacity 1s ease',
-            background: image.gradient,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(10px)',
+            color: 'white',
+            padding: 2,
           }}
         >
-          <img
-            src={image.src}
-            alt={image.title}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-            }}
-            onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.parentElement.style.background = image.gradient;
-            }}
-          />
-          <Typography
-            variant="h6"
-            sx={{
-              position: 'absolute',
-              bottom: 20,
-              left: 0,
-              right: 0,
-              textAlign: 'center',
-              color: 'white',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-              padding: '0 20px',
-            }}
-          >
-            {image.title}
+          <Typography variant="h6" align="center">
+            {galleryImages[currentIndex].title}
           </Typography>
-        </Box>
-      ))}
+        </Paper>
+      </Box>
+
+      {/* Navigation Arrows */}
+      <IconButton
+        sx={{
+          position: 'absolute',
+          left: 16,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          bgcolor: 'rgba(255,255,255,0.3)',
+          backdropFilter: 'blur(4px)',
+          '&:hover': {
+            bgcolor: 'rgba(255,255,255,0.4)',
+          },
+        }}
+        onClick={handlePrev}
+      >
+        <ArrowBackIcon sx={{ color: 'white' }} />
+      </IconButton>
+
+      <IconButton
+        sx={{
+          position: 'absolute',
+          right: 16,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          bgcolor: 'rgba(255,255,255,0.3)',
+          backdropFilter: 'blur(4px)',
+          '&:hover': {
+            bgcolor: 'rgba(255,255,255,0.4)',
+          },
+        }}
+        onClick={handleNext}
+      >
+        <ArrowForwardIcon sx={{ color: 'white' }} />
+      </IconButton>
+
+      {/* Dots Indicator */}
       <Box
         sx={{
           position: 'absolute',
-          bottom: 0,
+          bottom: 80,
           left: 0,
           right: 0,
           display: 'flex',
           justifyContent: 'center',
-          padding: '20px',
-          gap: '10px',
-          background: 'linear-gradient(transparent, rgba(0,0,0,0.5))',
+          gap: 1,
+          zIndex: 1,
         }}
       >
-        <IconButton onClick={handlePrevSlide} sx={{ color: 'white' }}>
-          <ArrowBackIcon />
-        </IconButton>
-        <IconButton onClick={handleNextSlide} sx={{ color: 'white' }}>
-          <ArrowForwardIcon />
-        </IconButton>
+        {galleryImages.map((_, index) => (
+          <Box
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            sx={{
+              width: 12,
+              height: 12,
+              borderRadius: '50%',
+              bgcolor: index === currentIndex ? 'white' : 'rgba(255,255,255,0.5)',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.2)',
+                bgcolor: 'white',
+              },
+            }}
+          />
+        ))}
       </Box>
     </Box>
   );
@@ -177,6 +222,10 @@ const Gallery = () => {
         {galleryImages.map((image, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Box
+              onClick={() => {
+                setIsGridView(false);
+                setCurrentIndex(index);
+              }}
               sx={{
                 height: 300,
                 borderRadius: '10px',
@@ -184,21 +233,16 @@ const Gallery = () => {
                 position: 'relative',
                 background: image.gradient,
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                cursor: 'pointer',
                 '&:hover': {
                   transform: 'scale(1.02)',
                   boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
                 },
               }}
             >
-              <img
+              <StyledCarouselImage
                 src={image.src}
                 alt={image.title}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'contain',
-                  padding: '16px',
-                }}
                 onError={(e) => {
                   e.target.style.display = 'none';
                   e.target.parentElement.style.background = image.gradient;
@@ -239,7 +283,13 @@ const Gallery = () => {
           </Typography>
           <IconButton
             onClick={() => setIsGridView(!isGridView)}
-            sx={{ mb: 2 }}
+            sx={{
+              mb: 2,
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.1)',
+              },
+            }}
           >
             {isGridView ? <ViewCarouselIcon /> : <GridViewIcon />}
           </IconButton>
