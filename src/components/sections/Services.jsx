@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Container, Grid, Typography, CardContent } from '@mui/material';
+import { Box, Container, Typography, CardContent } from '@mui/material';
+import Grid2 from '@mui/material/Grid2';
 import { Section, ServiceCard, GradientTypography, IconWrapper } from './StyledComponents';
 import BuildIcon from '@mui/icons-material/Build';
 import SecurityIcon from '@mui/icons-material/Security';
@@ -53,9 +54,9 @@ const Services = () => {
             Comprehensive facility management solutions
           </Typography>
         </Box>
-        <Grid container spacing={4}>
+        <Grid2 container spacing={4}>
           {services.map((service, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={index}>
               <ServiceCard>
                 <CardContent>
                   <Box display="flex" flexDirection="column" alignItems="center">
@@ -71,9 +72,9 @@ const Services = () => {
                   </Box>
                 </CardContent>
               </ServiceCard>
-            </Grid>
+            </Grid2>
           ))}
-        </Grid>
+        </Grid2>
       </Container>
     </Section>
   );
