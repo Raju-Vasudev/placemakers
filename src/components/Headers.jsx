@@ -10,9 +10,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   transition: 'all 0.3s ease',
 }));
 
-const StyledAppBar = styled(AppBar)(({ theme, transparent }) => ({
-  background: transparent ? 'transparent' : theme.palette.background.default,
-  boxShadow: transparent ? 'none' : theme.shadows[1],
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
   transition: 'all 0.3s ease',
 }));
 
@@ -132,7 +130,16 @@ const Headers = () => {
 
   return (
     <>
-      <StyledAppBar position="fixed" transparent={!isScrolled}>
+      <StyledAppBar 
+        position="fixed"
+        sx={{
+          background: isScrolled ? (theme) => theme.palette.background.default : 'transparent',
+          boxShadow: isScrolled ? 1 : 'none',
+          '& .MuiToolbar-root': {
+            minHeight: { xs: '64px', sm: '72px' }
+          }
+        }}
+      >
         <Container maxWidth="xl">
           <StyledToolbar>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
