@@ -18,7 +18,7 @@
   position: absolute;
   top: -40px;
   left: 0;
-  background: #2B5BA1;
+  background: #1B4B91;
   color: white;
   padding: 8px;
   z-index: 9999;
@@ -31,7 +31,7 @@
 
 /* Focus styles */
 :focus {
-  outline: 2px solid #2B5BA1;
+  outline: 2px solid #1B4B91;
   outline-offset: 2px;
 }
 
@@ -42,7 +42,7 @@ input:focus,
 textarea:focus,
 select:focus,
 [role="button"]:focus {
-  outline: 3px solid #2B5BA1;
+  outline: 3px solid #1B4B91;
   outline-offset: 2px;
 }
 
@@ -56,6 +56,121 @@ select:disabled {
 
 /* Improve keyboard focus visibility */
 *:focus-visible {
-  outline: 3px solid #2B5BA1;
+  outline: 3px solid #1B4B91;
   outline-offset: 2px;
+}
+
+/* Theme toggle button styles */
+.theme-toggle-button {
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-button:hover {
+  transform: rotate(30deg);
+}
+
+/* Dark mode specific styles */
+.dark-mode {
+  color-scheme: dark;
+}
+
+.light-mode {
+  color-scheme: light;
+}
+
+/* Dark mode focus styles */
+.dark-mode :focus {
+  outline-color: #3C70BA;
+}
+
+.dark-mode button:focus,
+.dark-mode a:focus,
+.dark-mode input:focus,
+.dark-mode textarea:focus,
+.dark-mode select:focus,
+.dark-mode [role="button"]:focus,
+.dark-mode *:focus-visible {
+  outline-color: #3C70BA;
+}
+
+/* Dark mode skip link */
+.dark-mode .skip-link {
+  background: #3C70BA;
+}
+
+/* High contrast mode styles */
+@media (forced-colors: active) {
+  button, 
+  a, 
+  input, 
+  select {
+    forced-color-adjust: none;
+    border: 1px solid ButtonText;
+  }
+  
+  .skip-link:focus {
+    border: 2px solid ButtonText;
+  }
+}
+
+/* Smooth transitions for theme changes */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ensure contrast in both themes */
+.dark-mode .MuiIconButton-root {
+  color: #FFFFFF;
+}
+
+.light-mode .MuiIconButton-root {
+  color: #0F2E5A;
+}
+
+/* Dark mode specific styles for content visibility */
+.dark-mode .MuiPaper-root {
+  background-color: rgba(42, 42, 42, 0.9);
+  color: #FFFFFF;
+}
+
+.dark-mode .MuiTypography-root {
+  color: #FFFFFF;
+}
+
+.dark-mode .MuiTypography-colorTextSecondary {
+  color: #CCCCCC;
+}
+
+/* Fix for gradient text in dark mode */
+.dark-mode .MuiTypography-root[style*="background-clip: text"] {
+  background: linear-gradient(45deg, #3C70BA 30%, #8BA888 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Ensure proper contrast for cards in dark mode */
+.dark-mode .MuiCard-root {
+  background-color: rgba(42, 42, 42, 0.9);
+  color: #FFFFFF;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .MuiCardContent-root {
+  color: #FFFFFF;
+}
+
+/* Ensure proper contrast for buttons in dark mode */
+.dark-mode .MuiButton-contained {
+  background: linear-gradient(45deg, #1B4B91 30%, #5A7A57 90%);
+  color: #FFFFFF;
+}
+
+.dark-mode .MuiButton-outlined {
+  border-color: #3C70BA;
+  color: #3C70BA;
+}
+
+.dark-mode .MuiButton-text {
+  color: #3C70BA;
 } 

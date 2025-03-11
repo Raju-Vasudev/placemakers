@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Container, Typography, CardContent, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton } from '@mui/material';
+import { Box, Container, Typography, CardContent, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, useTheme } from '@mui/material';
 import Grid2 from '@mui/material/Grid2';
 import { Section, ServiceCard, GradientTypography, IconWrapper, SectionSubheading, SectionHeadingWrapper } from './StyledComponents';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -18,6 +18,8 @@ const CARD_DIMENSIONS = {
 const ServiceCardItem = ({ service }) => {
   const [open, setOpen] = useState(false);
   const Icon = service.icon;
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
 
   return (
     <>
@@ -28,14 +30,16 @@ const ServiceCardItem = ({ service }) => {
           height: CARD_DIMENSIONS.height,
           p: 2.5,
           mb: 2,
-          background: 'rgba(255, 255, 255, 0.9)',
+          background: isDarkMode 
+            ? 'rgba(42, 42, 42, 0.9)' 
+            : 'rgba(255, 255, 255, 0.9)',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'flex-start',
           transition: 'transform 0.3s ease-in-out',
           '&:hover': {
             transform: 'scale(1.02)',
-            boxShadow: 6,
+            boxShadow: isDarkMode ? 8 : 6,
           }
         }}
       >
@@ -48,84 +52,54 @@ const ServiceCardItem = ({ service }) => {
             '&:last-child': { pb: 0 }
           }}
         >
-          <Box 
-            display="flex" 
-            flexDirection="column"
-            alignItems="flex-start"
-            sx={{ height: '100%' }}
+          <IconWrapper sx={{ mb: 2 }}>
+            <Icon fontSize="large" />
+          </IconWrapper>
+          
+          <Typography 
+            variant="h6" 
+            component="h3" 
+            sx={{ 
+              fontWeight: 'bold',
+              mb: 1.5,
+              height: CARD_DIMENSIONS.titleHeight,
+              display: 'flex',
+              alignItems: 'center',
+              color: theme.palette.text.primary
+            }}
           >
-            {/* Icon */}
-            <IconWrapper 
-              sx={{ 
-                width: CARD_DIMENSIONS.iconSize,
-                height: CARD_DIMENSIONS.iconSize,
-                mb: 2,
-                background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main}15, ${theme.palette.secondary.main}15)`,
-                '& svg': {
-                  fontSize: { xs: '1.75rem', sm: '2rem' },
-                  color: 'primary.main'
-                }
-              }}
-            >
-              <Icon fontSize="large" />
-            </IconWrapper>
-            
-            {/* Title */}
-            <Typography 
-              variant="h5" 
-              component="h3" 
-              sx={{
-                textAlign: 'center',
-                fontWeight: 'bold',
-                mb: 2,
-                fontSize: { xs: '1.3rem', sm: '1.2rem' },
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden'
-              }}
-            >
-              {service.title}
-            </Typography>
-            
-            {/* Description */}
-            <Typography 
-              variant="body1" 
-              sx={{ 
-                textAlign: 'center',
-                overflow: 'auto',
-                flex: 1,
-                fontSize: { xs: '0.9rem', sm: '0.85rem' },
-                '&::-webkit-scrollbar': {
-                  width: '4px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: 'rgba(0,0,0,0.2)',
-                  borderRadius: '4px',
-                }
-              }}
-            >
-              {service.description}
-            </Typography>
-            
-            {/* Button */}
-            <Button
+            {service.title}
+          </Typography>
+          
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              mb: 2,
+              height: CARD_DIMENSIONS.descriptionHeight,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              color: theme.palette.text.secondary
+            }}
+          >
+            {service.description}
+          </Typography>
+          
+          <Box sx={{ mt: 'auto' }}>
+            <Button 
+              variant="text" 
+              color="primary" 
               onClick={() => setOpen(true)}
               endIcon={<KeyboardArrowRightIcon />}
-              variant="text"
+              aria-label={`Learn more about ${service.title}`}
               sx={{
-                alignSelf: 'center',
-                color: 'primary.main',
-                mt: 2,
+                fontWeight: 'bold',
                 '&:hover': {
-                  background: 'none',
-                  color: 'primary.dark',
-                  '& .MuiSvgIcon-root': {
-                    transform: 'translateX(4px)'
-                  }
-                },
-                '& .MuiSvgIcon-root': {
-                  transition: 'transform 0.2s ease-in-out'
+                  background: isDarkMode 
+                    ? 'rgba(60, 112, 186, 0.1)' 
+                    : 'rgba(27, 75, 145, 0.1)',
                 }
               }}
             >
@@ -140,279 +114,117 @@ const ServiceCardItem = ({ service }) => {
         onClose={() => setOpen(false)}
         maxWidth="md"
         fullWidth
-        TransitionProps={{
-          timeout: 400
-        }}
+        aria-labelledby={`service-dialog-title-${service.id}`}
+        aria-describedby={`service-dialog-description-${service.id}`}
         PaperProps={{
-          elevation: 0
-        }}
-        sx={{
-          '& .MuiDialog-paper': {
-            borderRadius: '16px',
-            m: { xs: 2, sm: 4 },
-            p: { xs: 0, sm: 2 },
-            background: (theme) => 
-              theme.palette.mode === 'dark' 
-                ? 'rgba(22, 28, 36, 0.95)'
-                : 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(8px)',
-            border: (theme) => `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}`,
-          },
-          '& .MuiBackdrop-root': {
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            backdropFilter: 'blur(4px)'
+          sx: {
+            borderRadius: 2,
+            background: theme.palette.background.paper,
           }
         }}
       >
-        <DialogTitle 
-          sx={{ 
-            py: 3,
-            px: { xs: 3, sm: 4 },
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            background: (theme) => theme.palette.mode === 'dark' 
-              ? 'rgba(22, 28, 36, 0.8)'
-              : 'rgba(255, 255, 255, 0.8)',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
-            <IconWrapper 
-              sx={{ 
-                width: 52,
-                height: 52,
-                borderRadius: '14px',
-                background: (theme) => `linear-gradient(135deg, ${theme.palette.primary.main}20, ${theme.palette.secondary.main}20)`,
-                '& svg': { 
-                  fontSize: '1.75rem',
-                  color: 'primary.main'
-                }
-              }}
-            >
-              <Icon fontSize="large" />
-            </IconWrapper>
-            <Typography 
-              variant="h5" 
-              component="span" 
-              sx={{ 
-                fontWeight: 700,
-                fontSize: { xs: '1.25rem', sm: '1.5rem' },
-                color: 'text.primary'
-              }}
-            >
+        <DialogTitle id={`service-dialog-title-${service.id}`}>
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            <Typography variant="h5" component="div" fontWeight="bold" color="text.primary">
               {service.title}
             </Typography>
+            <IconButton 
+              onClick={() => setOpen(false)} 
+              size="small"
+              aria-label="Close dialog"
+            >
+              <CloseIcon />
+            </IconButton>
           </Box>
-          <IconButton 
-            onClick={() => setOpen(false)} 
-            aria-label="close"
-            sx={{ 
-              width: 40,
-              height: 40,
-              borderRadius: '12px',
-              color: 'text.secondary',
-              '&:hover': { 
-                background: (theme) => theme.palette.mode === 'dark' 
-                  ? 'rgba(255, 255, 255, 0.08)'
-                  : 'rgba(0, 0, 0, 0.04)',
-                color: 'text.primary'
-              }
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
         </DialogTitle>
-
-        <DialogContent 
-          sx={{ 
-            p: { xs: 3, sm: 4 },
-            '&::-webkit-scrollbar': {
-              width: '8px',
-              height: '8px',
-            },
-            '&::-webkit-scrollbar-thumb': {
-              borderRadius: '8px',
-              backgroundColor: (theme) => 
-                theme.palette.mode === 'dark' 
-                  ? 'rgba(255, 255, 255, 0.2)'
-                  : 'rgba(0, 0, 0, 0.2)',
-            }
-          }}
-        >
-          <Typography 
-            variant="body1" 
-            color="text.secondary" 
-            paragraph
-            sx={{ 
-              mb: 4, 
-              lineHeight: 1.7,
-              fontSize: { xs: '0.95rem', sm: '1rem' }
-            }}
-          >
-            {service.description}
-          </Typography>
-
+        <DialogContent dividers>
+          <Box sx={{ mb: 3 }}>
+            <Typography 
+              variant="body1" 
+              id={`service-dialog-description-${service.title}`}
+              paragraph
+              color="text.primary"
+            >
+              {service.description}
+            </Typography>
+          </Box>
+          
           {service.subgroups ? (
-            service.subgroups.map((subgroup, subIndex) => (
-              <Box 
-                key={subIndex} 
-                sx={{ 
-                  mb: 4,
-                  '&:last-child': { mb: 0 },
-                  p: 3,
-                  borderRadius: '12px',
-                  background: (theme) => theme.palette.mode === 'dark' 
-                    ? 'rgba(255, 255, 255, 0.04)'
-                    : 'rgba(0, 0, 0, 0.02)',
-                  border: '1px solid',
-                  borderColor: (theme) => theme.palette.mode === 'dark' 
-                    ? 'rgba(255, 255, 255, 0.08)'
-                    : 'rgba(0, 0, 0, 0.04)',
-                }}
-              >
-                <Typography 
-                  variant="h6" 
-                  sx={{ 
-                    color: 'primary.main',
-                    fontWeight: 600,
-                    fontSize: '1.1rem',
-                    mb: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    '&::before': {
-                      content: '""',
-                      width: 4,
-                      height: 4,
-                      borderRadius: '50%',
-                      bgcolor: 'primary.main',
-                      display: 'block'
-                    }
-                  }}
-                >
+            service.subgroups.map((subgroup, index) => (
+              <Box key={index} sx={{ mb: 3 }}>
+                <Typography variant="h6" gutterBottom fontWeight="bold" color="text.primary">
                   {subgroup.title}
                 </Typography>
                 {subgroup.description && (
-                  <Typography 
-                    variant="body2" 
-                    color="text.secondary" 
-                    sx={{ 
-                      mb: 2,
-                      lineHeight: 1.7,
-                      pl: 1.5
-                    }}
-                  >
+                  <Typography variant="body1" paragraph color="text.primary">
                     {subgroup.description}
                   </Typography>
                 )}
-                <Box 
-                  component="ul" 
-                  sx={{ 
-                    listStyle: 'none', 
-                    p: 0,
-                    m: 0,
-                    display: 'grid',
-                    gap: 1.5,
-                    pl: 1.5
-                  }}
-                >
+                <Box component="ul" sx={{ pl: 2 }}>
                   {subgroup.items.map((item, itemIndex) => (
-                    <Box 
+                    <Typography 
                       component="li" 
+                      variant="body1" 
                       key={itemIndex}
-                      sx={{ 
-                        color: 'text.secondary',
-                        display: 'flex',
-                        alignItems: 'center',
-                        fontSize: '0.95rem',
-                        transition: 'all 0.2s ease',
-                        '&:hover': {
-                          color: 'text.primary',
-                          transform: 'translateX(4px)'
-                        },
-                        '&::before': {
-                          content: '"•"',
-                          color: 'primary.main',
-                          mr: 1.5,
-                          fontSize: '1.2rem',
-                          lineHeight: 1,
-                          opacity: 0.7
-                        }
-                      }}
+                      sx={{ mb: 1 }}
+                      color="text.primary"
                     >
                       {item}
-                    </Box>
+                    </Typography>
                   ))}
                 </Box>
               </Box>
             ))
           ) : (
-            <Box 
-              component="ul" 
-              sx={{ 
-                listStyle: 'none', 
-                p: 3,
-                m: 0,
-                display: 'grid',
-                gap: 1.5,
-                borderRadius: '12px',
-                background: (theme) => theme.palette.mode === 'dark' 
-                  ? 'rgba(255, 255, 255, 0.04)'
-                  : 'rgba(0, 0, 0, 0.02)',
-                border: '1px solid',
-                borderColor: (theme) => theme.palette.mode === 'dark' 
-                  ? 'rgba(255, 255, 255, 0.08)'
-                  : 'rgba(0, 0, 0, 0.04)',
-              }}
-            >
-              {service.items.map((item, itemIndex) => (
-                <Box 
-                  component="li" 
-                  key={itemIndex}
-                  sx={{ 
-                    color: 'text.secondary',
-                    display: 'flex',
-                    alignItems: 'center',
-                    fontSize: '0.95rem',
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      color: 'text.primary',
-                      transform: 'translateX(4px)'
-                    },
-                    '&::before': {
-                      content: '"•"',
-                      color: 'primary.main',
-                      mr: 1.5,
-                      fontSize: '1.2rem',
-                      lineHeight: 1,
-                      opacity: 0.7
-                    }
-                  }}
-                >
-                  {item}
-                </Box>
-              ))}
+            <Box>
+              <Typography variant="h6" gutterBottom fontWeight="bold" color="text.primary">
+                Services Offered
+              </Typography>
+              <Box component="ul" sx={{ pl: 2 }}>
+                {service.items.map((item, index) => (
+                  <Typography 
+                    component="li" 
+                    variant="body1" 
+                    key={index}
+                    sx={{ mb: 1 }}
+                    color="text.primary"
+                  >
+                    {item}
+                  </Typography>
+                ))}
+              </Box>
             </Box>
           )}
         </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button 
+            onClick={() => setOpen(false)} 
+            variant="outlined"
+            aria-label="Close service details"
+          >
+            Close
+          </Button>
+          <Button 
+            variant="contained" 
+            onClick={() => {
+              setOpen(false);
+              document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+            }}
+            aria-label="Contact us about this service"
+          >
+            Contact Us
+          </Button>
+        </DialogActions>
       </Dialog>
     </>
   );
 };
 
 const Services = () => {
+  const theme = useTheme();
+  
   return (
-    <Section 
-      id="services"
-      sx={{
-        bgcolor: (theme) => theme.palette.mode === 'dark' 
-          ? 'background.default' 
-          : 'grey.50',
-        py: { xs: 8, md: 10 }
-      }}
-    >
+    <Section id="services">
       <Container maxWidth="lg">
         <SectionHeadingWrapper>
           <GradientTypography variant="h2" component="h2">
@@ -422,30 +234,24 @@ const Services = () => {
             {servicesConfig.subtitle}
           </SectionSubheading>
         </SectionHeadingWrapper>
-        <Box 
-          sx={{ 
-            maxWidth: theme => ({ xs: 400, sm: 600, md: 1200 }),
-            mx: 'auto'
+
+        <Grid2 
+          container 
+          spacing={3} 
+          justifyContent="center"
+          sx={{
+            '& .MuiGrid2-root': {
+              display: 'flex',
+              justifyContent: 'center',
+            }
           }}
         >
-          <Grid2 
-            container 
-            spacing={3} 
-            justifyContent="center"
-            sx={{
-              '& .MuiGrid2-root': {
-                display: 'flex',
-                justifyContent: 'center',
-              }
-            }}
-          >
-            {servicesConfig.serviceGroups.map((service, index) => (
-              <Grid2 key={index} xs={12} sm={6} md={4} lg={4}>
-                <ServiceCardItem service={service} />
-              </Grid2>
-            ))}
-          </Grid2>
-        </Box>
+          {servicesConfig.serviceGroups.map((service) => (
+            <Grid2 key={service.title} xs={12} sm={6} md={4} lg={4}>
+              <ServiceCardItem service={service} />
+            </Grid2>
+          ))}
+        </Grid2>
       </Container>
     </Section>
   );

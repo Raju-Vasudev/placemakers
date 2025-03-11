@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AppBar, Toolbar, Box, Container, IconButton, Drawer, List, ListItem, ListItemText, Button } from '@mui/material';
+import { AppBar, Toolbar, Box, Container, IconButton, Drawer, List, ListItem, ListItemText, Button, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { useThemeContext } from '../context/ThemeContext';
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -62,6 +65,7 @@ const Headers = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const lastFocusedElementRef = useRef(null);
+  const { mode, toggleTheme } = useThemeContext();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -120,6 +124,10 @@ const Headers = () => {
     }
   };
 
+  const handleThemeToggle = () => {
+    toggleTheme();
+  };
+
   const drawer = (
     <Box 
       onClick={handleDrawerClose} 
@@ -152,6 +160,16 @@ const Headers = () => {
             </Button>
           </ListItem>
         ))}
+        <ListItem disablePadding component="li">
+          <Button
+            fullWidth
+            onClick={handleThemeToggle}
+            sx={{ textAlign: 'center', py: 1.5 }}
+            aria-label={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}
+          >
+            <ListItemText primary={`${mode === 'light' ? 'Dark' : 'Light'} Mode`} />
+          </Button>
+        </ListItem>
       </List>
     </Box>
   );
@@ -205,7 +223,7 @@ const Headers = () => {
               />
             </Box>
             
-            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
               {navItems.map((item) => (
                 <StyledButton 
                   key={item.id}
@@ -216,9 +234,31 @@ const Headers = () => {
                   {item.title}
                 </StyledButton>
               ))}
+              <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}>
+                <IconButton 
+                  onClick={handleThemeToggle} 
+                  color="inherit"
+                  aria-label={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}
+                  className="theme-toggle-button"
+                  sx={{ ml: 2 }}
+                >
+                  {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+                </IconButton>
+              </Tooltip>
             </Box>
             
-            <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center' }}>
+              <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}>
+                <IconButton 
+                  onClick={handleThemeToggle} 
+                  color="inherit"
+                  aria-label={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}
+                  className="theme-toggle-button"
+                  sx={{ mr: 1 }}
+                >
+                  {mode === 'light' ? <Brightness4Icon /> : <Brightness7Icon />}
+                </IconButton>
+              </Tooltip>
               <IconButton
                 color="inherit"
                 aria-label="Open navigation menu"

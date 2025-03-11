@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { createTheme } from '@mui/material/styles';
 
 // Updated colors with better contrast ratios
@@ -21,7 +21,51 @@ const themeColors = {
 };
 
 export const useTheme = () => {
-  const [mode, setMode] = useState('light');
+  // Initialize theme from localStorage or system preference
+  const [mode, setMode] = useState(() => {
+    const savedMode = localStorage.getItem('theme-mode');
+    if (savedMode) {
+      return savedMode;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  // Apply data-theme attribute to body and save to localStorage
+  useEffect(() => {
+    document.body.setAttribute('data-theme', mode);
+    localStorage.setItem('theme-mode', mode);
+    
+    // Apply class to body for additional CSS targeting
+    if (mode === 'dark') {
+      document.body.classList.add('dark-mode');
+      document.body.classList.remove('light-mode');
+    } else {
+      document.body.classList.add('light-mode');
+      document.body.classList.remove('dark-mode');
+    }
+  }, [mode]);
+
+  // Listen for system preference changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleChange = (e) => {
+      // Only update if user hasn't manually set a preference
+      if (!localStorage.getItem('theme-mode')) {
+        setMode(e.matches ? 'dark' : 'light');
+      }
+    };
+    
+    // Add event listener with newer API if supported
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    } else {
+      // Fallback for older browsers
+      mediaQuery.addListener(handleChange);
+      return () => mediaQuery.removeListener(handleChange);
+    }
+  }, []);
 
   const theme = useMemo(() => createTheme({
     palette: {
@@ -182,11 +226,42 @@ export const useTheme = () => {
           },
         },
       },
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            transition: 'background-color 0.3s ease, color 0.3s ease',
+            ...(mode === 'dark' && {
+              scrollbarColor: '#6b6b6b #2b2b2b',
+              '&::-webkit-scrollbar, & *::-webkit-scrollbar': {
+                backgroundColor: '#2b2b2b',
+              },
+              '&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb': {
+                borderRadius: 8,
+                backgroundColor: '#6b6b6b',
+                minHeight: 24,
+                border: '3px solid #2b2b2b',
+              },
+              '&::-webkit-scrollbar-thumb:focus, & *::-webkit-scrollbar-thumb:focus': {
+                backgroundColor: '#959595',
+              },
+              '&::-webkit-scrollbar-thumb:active, & *::-webkit-scrollbar-thumb:active': {
+                backgroundColor: '#959595',
+              },
+              '&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover': {
+                backgroundColor: '#959595',
+              },
+            }),
+          },
+        },
+      },
     },
   }), [mode]);
 
   const toggleTheme = () => {
-    setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+    setMode((prevMode) => {
+      const newMode = prevMode === 'light' ? 'dark' : 'light';
+      return newMode;
+    });
   };
 
   return { theme, mode, toggleTheme };

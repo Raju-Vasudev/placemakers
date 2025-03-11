@@ -1,10 +1,13 @@
 import React from 'react';
-import { Box, Container, Typography, Paper } from '@mui/material';
+import { Box, Container, Typography, Paper, useTheme } from '@mui/material';
 import Grid2 from '@mui/material/Grid2';
 import { Section, GradientTypography, SectionSubheading, SectionHeadingWrapper } from './StyledComponents';
 import { aboutConfig } from '../../config/aboutConfig';
 
 const About = () => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
+
   return (
     <Section id="about">
       <Container maxWidth="lg">
@@ -19,7 +22,14 @@ const About = () => {
 
         <Box mb={6}>
           {aboutConfig.introduction.map((text, index) => (
-            <Typography key={index} variant="body1" sx={{ mb: 2 }}>
+            <Typography 
+              key={index} 
+              variant="body1" 
+              sx={{ 
+                mb: 2,
+                color: theme.palette.text.primary 
+              }}
+            >
               {text}
             </Typography>
           ))}
@@ -45,43 +55,71 @@ const About = () => {
                   height: { xs: '280px', sm: '240px', md: '260px' },
                   p: 2.5,
                   mb: 2,
-                  background: 'rgba(255, 255, 255, 0.9)',
+                  background: isDarkMode 
+                    ? 'rgba(42, 42, 42, 0.9)' 
+                    : 'rgba(255, 255, 255, 0.9)',
+                  color: theme.palette.text.primary,
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'flex-start',
                   transition: 'transform 0.3s ease-in-out',
                   '&:hover': {
                     transform: 'scale(1.02)',
-                    boxShadow: 6,
+                    boxShadow: isDarkMode ? 8 : 6,
                   },
+                  overflow: 'hidden'
                 }}
               >
-                <Typography 
-                  variant="h5" 
-                  color="primary" 
+                <Box 
                   sx={{ 
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    mb: 2,
-                    fontSize: { xs: '1.3rem', sm: '1.2rem' },
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    mb: 2 
                   }}
                 >
-                  {item.title}
-                </Typography>
+                  <Box 
+                    sx={{ 
+                      width: 48, 
+                      height: 48, 
+                      borderRadius: '50%', 
+                      background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mr: 2,
+                      color: 'white',
+                      fontSize: '1.5rem',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {index + 1}
+                  </Box>
+                  <Typography 
+                    variant="h6" 
+                    component="h3" 
+                    sx={{ 
+                      fontWeight: 'bold',
+                      color: theme.palette.text.primary
+                    }}
+                  >
+                    {item.title}
+                  </Typography>
+                </Box>
                 <Typography 
-                  variant="body1" 
+                  variant="body2" 
                   sx={{ 
-                    textAlign: 'center',
+                    color: theme.palette.text.secondary,
+                    lineHeight: 1.6,
                     overflow: 'auto',
-                    flex: 1,
-                    fontSize: { xs: '0.9rem', sm: '0.85rem' },
+                    height: '70%',
+                    pr: 1,
                     '&::-webkit-scrollbar': {
                       width: '4px',
                     },
                     '&::-webkit-scrollbar-thumb': {
-                      backgroundColor: 'rgba(0,0,0,0.2)',
+                      backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
                       borderRadius: '4px',
-                    },
+                    }
                   }}
                 >
                   {item.content}
