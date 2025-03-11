@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Box, Container, Typography, Card, IconButton } from '@mui/material';
+import { Box, Container, Typography, Card, IconButton, Grid } from '@mui/material';
 import { Section, GradientTypography, SectionSubheading, SectionHeadingWrapper } from './StyledComponents';
 import { getClientLogos } from '../../utils/clientUtils';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import BusinessIcon from '@mui/icons-material/Business';
+import GridViewIcon from '@mui/icons-material/GridView';
+import ViewCarouselIcon from '@mui/icons-material/ViewCarousel';
 
 const ClientCard = ({ name, logoPath }) => (
   <Card
@@ -122,6 +124,7 @@ const EmptyState = () => (
 const Clients = () => {
   const [clients, setClients] = useState([]);
   const [isPaused, setIsPaused] = useState(false);
+  const [isGridView, setIsGridView] = useState(false);
   const scrollContainerRef = React.useRef(null);
   const [error, setError] = useState(null);
 
@@ -146,18 +149,17 @@ const Clients = () => {
 
   // Continuous scrolling effect
   useEffect(() => {
-    if (!scrollContainerRef.current || clients.length === 0) return;
+    if (!scrollContainerRef.current || clients.length === 0 || isGridView) return;
 
     const scrollContainer = scrollContainerRef.current;
     let animationFrameId;
     let currentScroll = 0;
-    const SCROLL_SPEED = 1.5; // Increased speed (was 0.5)
+    const SCROLL_SPEED = 1.5;
 
     const scroll = () => {
       if (!isPaused) {
         currentScroll += SCROLL_SPEED;
         
-        // Reset scroll position when reaching the end of the first set
         if (currentScroll >= scrollContainer.scrollWidth / 2) {
           currentScroll = 0;
         }
@@ -174,7 +176,7 @@ const Clients = () => {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [clients, isPaused]);
+  }, [clients, isPaused, isGridView]);
 
   // Pause auto-scroll on hover or touch
   const handleMouseEnter = () => setIsPaused(true);
@@ -188,6 +190,77 @@ const Clients = () => {
   // Create duplicated array for continuous scrolling
   const displayClients = [...clients, ...clients, ...clients];
 
+  const GridViewComponent = () => (
+    <Box
+      sx={{
+        mt: 4,
+        height: '500px',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        '&::-webkit-scrollbar': {
+          width: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'rgba(0,0,0,0.1)',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: (theme) => 
+            `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
+          borderRadius: '4px',
+          '&:hover': {
+            background: (theme) => 
+              `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.secondary.dark} 90%)`,
+          },
+        },
+      }}
+    >
+      <Grid container spacing={3} justifyContent="center">
+        {clients.map((client, index) => (
+          <Grid item xs={12} sm={6} md={3} key={`${client.name}-${index}`}>
+            <ClientCard {...client} />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+
+  const CarouselView = () => (
+    <Box 
+      sx={{ 
+        position: 'relative',
+        px: { xs: 0, md: 2 },
+        overflow: 'hidden',
+      }}
+    >
+      <Box
+        ref={scrollContainerRef}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        sx={{
+          display: 'flex',
+          overflowX: 'hidden',
+          py: 2,
+          px: { xs: 2, md: 0 },
+          gap: 2,
+          width: '100%',
+          '& > *': {
+            flex: '0 0 auto',
+          },
+          scrollbarWidth: 'none',
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+          msOverflowStyle: 'none',
+        }}
+      >
+        {displayClients.map((client, index) => (
+          <ClientCard key={`${client.name}-${index}`} {...client} />
+        ))}
+      </Box>
+    </Box>
+  );
+
   return (
     <Section id="clients">
       <Container maxWidth="xl">
@@ -198,45 +271,24 @@ const Clients = () => {
           <SectionSubheading variant="h5">
             Trusted by leading organizations across industries
           </SectionSubheading>
+          {clients.length > 0 && (
+            <IconButton
+              onClick={() => setIsGridView(!isGridView)}
+              sx={{
+                mt: 2,
+                transition: 'transform 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.1)',
+                },
+              }}
+            >
+              {isGridView ? <ViewCarouselIcon /> : <GridViewIcon />}
+            </IconButton>
+          )}
         </SectionHeadingWrapper>
 
         {clients.length > 0 ? (
-          <Box 
-            sx={{ 
-              position: 'relative',
-              px: { xs: 0, md: 2 },
-              overflow: 'hidden', // Hide overflow for seamless scrolling
-            }}
-          >
-            <Box
-              ref={scrollContainerRef}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-              sx={{
-                display: 'flex',
-                overflowX: 'hidden', // Hide scrollbar but allow scrolling
-                py: 2,
-                px: { xs: 2, md: 0 },
-                gap: 2,
-                width: '100%',
-                '& > *': {
-                  flex: '0 0 auto',
-                },
-                // Remove scrollbar from all browsers
-                scrollbarWidth: 'none',
-                '&::-webkit-scrollbar': {
-                  display: 'none',
-                },
-                msOverflowStyle: 'none',
-              }}
-            >
-              {displayClients.map((client, index) => (
-                <ClientCard key={`${client.name}-${index}`} {...client} />
-              ))}
-            </Box>
-          </Box>
+          isGridView ? <GridViewComponent /> : <CarouselView />
         ) : (
           <EmptyState />
         )}
