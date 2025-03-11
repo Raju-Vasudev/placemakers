@@ -125,7 +125,7 @@ export const servicesConfig = {
             'Irrigation Services',
             'Landscape Design'
           ],
-          description: 'Professional landscaping and maintenance of gardens, green plants, and flower belts.'
+          description: ''
         }
       ]
     }
