@@ -219,7 +219,12 @@ const Headers = () => {
               <Logo 
                 src="/placemakers/placemakers-logo.svg" 
                 alt="Placemakers Logo"
-                style={{ height: isScrolled ? '40px' : '50px' }}
+                style={{ height: isScrolled ? '40px' : '50px', cursor: 'pointer' }}
+                onClick={() => scrollToSection('home')}
+                onKeyDown={(e) => handleKeyDown(e, 'home')}
+                tabIndex="0"
+                role="button"
+                aria-label="Go to home section"
               />
             </Box>
             
