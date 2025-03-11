@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Snackbar } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import ContactForm from './ContactForm';
@@ -25,6 +25,7 @@ const ContactFormContainer = () => {
     message: '',
     severity: 'success',
   });
+  const lastFocusedElementRef = useRef(null);
 
   const {
     errors,
@@ -35,16 +36,29 @@ const ContactFormContainer = () => {
     resetValidation,
   } = useFormValidation();
 
-  const handleOpenContactForm = useCallback(() => {
+  const handleOpenContactForm = useCallback((event) => {
+    if (event) {
+      lastFocusedElementRef.current = document.activeElement;
+    }
     setIsContactFormOpen(true);
   }, []);
 
   const handleCloseContactForm = useCallback(() => {
     setIsContactFormOpen(false);
     resetForm();
+    
+    // Return focus to the element that opened the form
+    setTimeout(() => {
+      if (lastFocusedElementRef.current) {
+        lastFocusedElementRef.current.focus();
+      }
+    }, 100);
   }, []);
 
-  const handleCloseSnackbar = useCallback(() => {
+  const handleCloseSnackbar = useCallback((event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
     setSnackbar(prev => ({ ...prev, open: false }));
   }, []);
 
@@ -82,6 +96,12 @@ const ContactFormContainer = () => {
     
     const isValid = validateForm(formData);
     if (!isValid) {
+      // Announce validation errors to screen readers
+      const errorMessage = Object.values(errors).join('. ');
+      const errorAnnouncement = document.getElementById('form-error-announcement');
+      if (errorAnnouncement) {
+        errorAnnouncement.textContent = `Form validation failed: ${errorMessage}`;
+      }
       return;
     }
 
@@ -108,11 +128,12 @@ const ContactFormContainer = () => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [formData, validateForm, handleBlur, handleCloseContactForm]);
+  }, [formData, errors, validateForm, handleBlur, handleCloseContactForm]);
 
   return (
     <>
       <FloatingContactButton onClick={handleOpenContactForm} />
+      
       <ContactForm
         open={isContactFormOpen}
         onClose={handleCloseContactForm}
@@ -125,19 +146,38 @@ const ContactFormContainer = () => {
         onBlur={handleFieldBlur}
         isValid={isFormValid()}
       />
+      
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={5000}
+        autoHideDuration={6000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert 
-          onClose={handleCloseSnackbar}
+          onClose={handleCloseSnackbar} 
           severity={snackbar.severity}
+          sx={{ width: '100%' }}
+          aria-live="assertive"
         >
           {snackbar.message}
         </Alert>
       </Snackbar>
+      
+      {/* Hidden elements for screen reader announcements */}
+      <div 
+        id="form-error-announcement" 
+        className="visually-hidden" 
+        aria-live="assertive" 
+        role="alert"
+      ></div>
+      
+      <div 
+        id="form-status-announcement" 
+        className="visually-hidden" 
+        aria-live="polite"
+      >
+        {isSubmitting ? 'Submitting your message, please wait...' : ''}
+      </div>
     </>
   );
 };

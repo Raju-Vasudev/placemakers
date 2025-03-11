@@ -1,0 +1,61 @@
+/* Accessibility Styles */
+
+/* Visually hidden elements (visible to screen readers only) */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  white-space: nowrap;
+}
+
+/* Skip link styles */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #2B5BA1;
+  color: white;
+  padding: 8px;
+  z-index: 9999;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Focus styles */
+:focus {
+  outline: 2px solid #2B5BA1;
+  outline-offset: 2px;
+}
+
+/* High contrast focus for interactive elements */
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus,
+[role="button"]:focus {
+  outline: 3px solid #2B5BA1;
+  outline-offset: 2px;
+}
+
+/* Ensure proper contrast for disabled elements */
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.7;
+}
+
+/* Improve keyboard focus visibility */
+*:focus-visible {
+  outline: 3px solid #2B5BA1;
+  outline-offset: 2px;
+} 

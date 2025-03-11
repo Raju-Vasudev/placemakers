@@ -1,21 +1,22 @@
 import { useState, useMemo } from 'react';
 import { createTheme } from '@mui/material/styles';
 
+// Updated colors with better contrast ratios
 const themeColors = {
   primary: {
-    main: '#2B5BA1',
+    main: '#1B4B91', // Darker blue for better contrast
     light: '#3C70BA',
-    dark: '#1B1464',
+    dark: '#0F2E5A', // Even darker for better contrast
   },
   secondary: {
-    main: '#8BA888',
-    light: '#A1BF9E',
-    dark: '#6B8368',
+    main: '#5A7A57', // Darker green for better contrast
+    light: '#8BA888',
+    dark: '#3E5A3C', // Even darker for better contrast
   },
   accent: {
-    main: '#F2D594',
-    light: '#F7E5B7',
-    dark: '#C2A874',
+    main: '#D9B44A', // Darker gold for better contrast
+    light: '#F2D594',
+    dark: '#B08E2F', // Even darker for better contrast
   },
 };
 
@@ -32,32 +33,60 @@ export const useTheme = () => {
         paper: mode === 'light' ? '#F5F5F5' : '#1E1E1E',
       },
       text: {
-        primary: mode === 'light' ? '#1B1464' : '#FFFFFF',
-        secondary: mode === 'light' ? '#666666' : '#A0A0A0',
+        primary: mode === 'light' ? '#0F2E5A' : '#FFFFFF', // Darker text for better contrast
+        secondary: mode === 'light' ? '#444444' : '#CCCCCC', // Darker secondary text for better contrast
+      },
+      error: {
+        main: '#D32F2F', // Accessible red
+      },
+      warning: {
+        main: '#ED6C02', // Accessible orange
+      },
+      info: {
+        main: '#0288D1', // Accessible blue
+      },
+      success: {
+        main: '#2E7D32', // Accessible green
       },
     },
     typography: {
       fontFamily: '"Arial", "Helvetica", sans-serif',
+      fontSize: 16, // Base font size for better readability
+      htmlFontSize: 16,
       h1: {
         fontWeight: 900,
         fontFamily: '"Arial Black", "Arial", sans-serif',
+        fontSize: '2.5rem',
       },
       h2: {
         fontWeight: 900,
         fontFamily: '"Arial Black", "Arial", sans-serif',
+        fontSize: '2rem',
       },
       h3: {
         fontWeight: 900,
         fontFamily: '"Arial Black", "Arial", sans-serif',
+        fontSize: '1.75rem',
       },
       h4: {
         fontWeight: 700,
+        fontSize: '1.5rem',
       },
       h5: {
         fontWeight: 700,
+        fontSize: '1.25rem',
       },
       h6: {
         fontWeight: 700,
+        fontSize: '1rem',
+      },
+      body1: {
+        fontSize: '1rem',
+        lineHeight: 1.5, // Improved line height for readability
+      },
+      body2: {
+        fontSize: '0.875rem',
+        lineHeight: 1.5,
       },
     },
     components: {
@@ -67,12 +96,18 @@ export const useTheme = () => {
             textTransform: 'none',
             borderRadius: 8,
             fontWeight: 600,
+            padding: '8px 16px', // Larger touch target
+            minHeight: '44px', // Minimum height for touch targets
+            '&:focus-visible': {
+              outline: `3px solid ${themeColors.primary.dark}`,
+              outlineOffset: '2px',
+            },
           },
           contained: {
             background: `linear-gradient(45deg, ${themeColors.primary.main} 30%, ${themeColors.secondary.main} 90%)`,
             color: 'white',
             '&:hover': {
-              background: `linear-gradient(45deg, ${themeColors.primary.light} 30%, ${themeColors.secondary.light} 90%)`,
+              background: `linear-gradient(45deg, ${themeColors.primary.dark} 30%, ${themeColors.secondary.dark} 90%)`,
             },
           },
           outlined: {
@@ -80,7 +115,7 @@ export const useTheme = () => {
             color: themeColors.primary.main,
             '&:hover': {
               borderColor: themeColors.primary.light,
-              background: `rgba(43, 91, 161, 0.1)`,
+              background: `rgba(27, 75, 145, 0.1)`,
             },
           },
         },
@@ -99,7 +134,51 @@ export const useTheme = () => {
         styleOverrides: {
           root: {
             backgroundColor: mode === 'light' ? '#FFFFFF' : '#121212',
-            color: mode === 'light' ? '#1B1464' : '#FFFFFF',
+            color: mode === 'light' ? '#0F2E5A' : '#FFFFFF',
+          },
+        },
+      },
+      MuiTextField: {
+        styleOverrides: {
+          root: {
+            '& .MuiInputLabel-root': {
+              color: mode === 'light' ? '#444444' : '#CCCCCC',
+            },
+            '& .MuiOutlinedInput-root': {
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: themeColors.primary.main,
+                borderWidth: 2,
+              },
+              '&:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: themeColors.primary.light,
+              },
+            },
+          },
+        },
+      },
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            color: themeColors.primary.main,
+            textDecoration: 'underline',
+            '&:hover': {
+              color: themeColors.primary.dark,
+            },
+            '&:focus-visible': {
+              outline: `3px solid ${themeColors.primary.dark}`,
+              outlineOffset: '2px',
+            },
+          },
+        },
+      },
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: {
+            backgroundColor: mode === 'light' ? '#0F2E5A' : '#FFFFFF',
+            color: mode === 'light' ? '#FFFFFF' : '#0F2E5A',
+            fontSize: '0.875rem',
+            padding: '8px 12px',
+            borderRadius: 4,
           },
         },
       },

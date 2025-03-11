@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Box,
   Typography,
@@ -29,6 +29,24 @@ const ContactForm = ({
   isValid,
 }) => {
   const theme = useTheme();
+  const firstInputRef = useRef(null);
+  const submitButtonRef = useRef(null);
+
+  // Focus management
+  useEffect(() => {
+    if (open && firstInputRef.current) {
+      setTimeout(() => {
+        firstInputRef.current.focus();
+      }, 100);
+    }
+  }, [open]);
+
+  const handleKeyDown = (e) => {
+    // Close on escape
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  };
 
   return (
     <Dialog
@@ -43,23 +61,41 @@ const ContactForm = ({
           background: theme.palette.background.paper,
         }
       }}
+      aria-labelledby="contact-form-dialog-title"
+      aria-describedby="contact-form-dialog-description"
+      onKeyDown={handleKeyDown}
     >
-      <DialogTitle>
+      <DialogTitle id="contact-form-dialog-title">
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h5" component="div" fontWeight="bold">
             Send us a Message
           </Typography>
-          <IconButton onClick={onClose} size="small">
+          <IconButton 
+            onClick={onClose} 
+            size="small"
+            aria-label="Close contact form"
+          >
             <CloseIcon />
           </IconButton>
         </Box>
       </DialogTitle>
       <DialogContent dividers>
-        <Box component="form" id="contact-form" onSubmit={onSubmit} sx={{ p: 2 }}>
+        <Box 
+          component="form" 
+          id="contact-form" 
+          onSubmit={onSubmit} 
+          sx={{ p: 2 }}
+          role="form"
+          aria-describedby="form-description"
+        >
+          <Typography id="form-description" variant="body2" sx={{ mb: 3 }} className="visually-hidden">
+            Please fill out the form below to contact us. All fields marked with an asterisk are required.
+          </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                id="contact-name"
                 label="Name"
                 name="name"
                 value={formData.name}
@@ -69,11 +105,23 @@ const ContactForm = ({
                 helperText={touched.name && errors.name}
                 required
                 variant="outlined"
+                inputRef={firstInputRef}
+                inputProps={{
+                  'aria-required': 'true',
+                  'aria-invalid': touched.name && Boolean(errors.name),
+                  'aria-describedby': touched.name && errors.name ? 'name-error' : undefined,
+                }}
               />
+              {touched.name && errors.name && (
+                <span id="name-error" className="visually-hidden">
+                  {errors.name}
+                </span>
+              )}
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                id="contact-email"
                 label="Email"
                 name="email"
                 type="email"
@@ -84,11 +132,22 @@ const ContactForm = ({
                 helperText={touched.email && errors.email}
                 required
                 variant="outlined"
+                inputProps={{
+                  'aria-required': 'true',
+                  'aria-invalid': touched.email && Boolean(errors.email),
+                  'aria-describedby': touched.email && errors.email ? 'email-error' : undefined,
+                }}
               />
+              {touched.email && errors.email && (
+                <span id="email-error" className="visually-hidden">
+                  {errors.email}
+                </span>
+              )}
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
+                id="contact-message"
                 label="Message"
                 name="message"
                 multiline
@@ -100,36 +159,46 @@ const ContactForm = ({
                 helperText={touched.message && errors.message}
                 required
                 variant="outlined"
+                inputProps={{
+                  'aria-required': 'true',
+                  'aria-invalid': touched.message && Boolean(errors.message),
+                  'aria-describedby': touched.message && errors.message ? 'message-error' : undefined,
+                }}
               />
+              {touched.message && errors.message && (
+                <span id="message-error" className="visually-hidden">
+                  {errors.message}
+                </span>
+              )}
             </Grid>
           </Grid>
         </Box>
       </DialogContent>
-      <DialogActions sx={{ p: 3 }}>
-        <Button onClick={onClose} variant="outlined">
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button 
+          onClick={onClose} 
+          variant="outlined" 
+          sx={{ mr: 1 }}
+          aria-label="Cancel and close form"
+        >
           Cancel
         </Button>
         <Button
           type="submit"
           form="contact-form"
           variant="contained"
+          disabled={!isValid || isSubmitting}
           endIcon={<SendIcon />}
-          disabled={isSubmitting || !isValid}
-          sx={{
-            background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
-            color: 'white',
-            '&:hover': {
-              background: `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.secondary.dark} 90%)`,
-            },
-            '&:disabled': {
-              background: theme.palette.action.disabledBackground,
-              color: theme.palette.action.disabled,
-            },
-          }}
+          ref={submitButtonRef}
+          aria-label="Submit contact form"
         >
           {isSubmitting ? 'Sending...' : 'Send Message'}
         </Button>
       </DialogActions>
+      {/* Screen reader announcements */}
+      <div aria-live="polite" className="visually-hidden">
+        {isSubmitting ? 'Submitting your message, please wait...' : ''}
+      </div>
     </Dialog>
   );
 };

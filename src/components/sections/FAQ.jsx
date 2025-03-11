@@ -58,71 +58,66 @@ const FAQ = () => {
         </SectionHeadingWrapper>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-            {faqs.map((faq, index) => (
-              <Accordion
-                key={index}
-                sx={{
-                  mb: 2,
-                  background: (theme) => theme.palette.background.paper,
-                  borderRadius: '8px !important',
-                  '&:before': {
-                    display: 'none',
-                  },
-                  '&:first-of-type': {
-                    borderTopLeftRadius: '8px !important',
-                    borderTopRightRadius: '8px !important',
-                  },
-                  '&:last-of-type': {
-                    borderBottomLeftRadius: '8px !important',
-                    borderBottomRightRadius: '8px !important',
-                  },
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                  transition: 'all 0.3s ease',
-                  '&:hover': {
-                    boxShadow: '0 6px 12px rgba(0,0,0,0.15)',
-                  },
-                }}
-              >
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
+            <div role="region" aria-label="Frequently Asked Questions">
+              {faqs.map((faq, index) => (
+                <Accordion
+                  key={index}
+                  id={`faq-accordion-${index}`}
                   sx={{
-                    '& .MuiAccordionSummary-content': {
-                      margin: (theme) => theme.spacing(2, 0),
+                    mb: 2,
+                    background: (theme) => theme.palette.background.paper,
+                    borderRadius: '8px !important',
+                    '&:before': {
+                      display: 'none',
                     },
-                    '& .MuiAccordionSummary-expandIconWrapper': {
-                      transform: 'rotate(0deg)',
-                      transition: 'transform 0.3s ease',
-                      '&.Mui-expanded': {
-                        transform: 'rotate(180deg)',
-                      },
+                    '&:first-of-type': {
+                      borderTopLeftRadius: '8px !important',
+                      borderTopRightRadius: '8px !important',
+                    },
+                    '&:last-of-type': {
+                      borderBottomLeftRadius: '8px !important',
+                      borderBottomRightRadius: '8px !important',
+                    },
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      boxShadow: '0 6px 12px rgba(0,0,0,0.15)',
                     },
                   }}
                 >
-                  <Typography 
-                    variant="h6" 
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon aria-hidden="true" />}
+                    aria-controls={`faq-panel-${index}-content`}
+                    id={`faq-panel-${index}-header`}
                     sx={{
-                      fontWeight: 600,
-                      background: (theme) => 
-                        `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
+                      '& .MuiAccordionSummary-content': {
+                        margin: (theme) => theme.spacing(2, 0),
+                      },
+                      '& .MuiAccordionSummary-expandIconWrapper': {
+                        transform: 'rotate(0deg)',
+                        transition: 'transform 0.3s ease',
+                        '&.Mui-expanded': {
+                          transform: 'rotate(180deg)',
+                        },
+                      },
                     }}
                   >
-                    {faq.question}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ pb: 3 }}>
-                  <Typography 
-                    variant="body1" 
-                    color="textSecondary"
-                    sx={{ lineHeight: 1.7 }}
-                  >
-                    {faq.answer}
-                  </Typography>
-                </AccordionDetails>
-              </Accordion>
-            ))}
+                    <Typography 
+                      variant="h6" 
+                      component="h3" 
+                      fontWeight="bold"
+                    >
+                      {faq.question}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails id={`faq-panel-${index}-content`}>
+                    <Typography variant="body1">
+                      {faq.answer}
+                    </Typography>
+                  </AccordionDetails>
+                </Accordion>
+              ))}
+            </div>
           </Grid>
         </Grid>
       </Container>

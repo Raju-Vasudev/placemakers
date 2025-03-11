@@ -13,7 +13,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Headers />
-      <main>
+      <main id="main-content" tabIndex="-1">
         <Hero />
         <About />
         <Services />

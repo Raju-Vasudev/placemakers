@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AppBar, Toolbar, Box, Container, IconButton, Drawer, List, ListItem, ListItemText, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -61,6 +61,7 @@ const navItems = [
 const Headers = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const lastFocusedElementRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,8 +75,21 @@ const Headers = () => {
     };
   }, []);
 
-  const handleDrawerToggle = () => {
+  const handleDrawerToggle = (event) => {
+    if (event) {
+      lastFocusedElementRef.current = event.currentTarget;
+    }
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleDrawerClose = () => {
+    setMobileOpen(false);
+    // Return focus to the element that opened the drawer
+    if (lastFocusedElementRef.current) {
+      setTimeout(() => {
+        lastFocusedElementRef.current.focus();
+      }, 100);
+    }
   };
 
   const scrollToSection = (sectionId) => {
@@ -90,35 +104,49 @@ const Headers = () => {
         behavior: 'smooth',
       });
       setMobileOpen(false);
+      
+      // Set focus to the section for better keyboard navigation
+      setTimeout(() => {
+        element.setAttribute('tabindex', '-1');
+        element.focus({ preventScroll: true });
+      }, 1000);
+    }
+  };
+
+  const handleKeyDown = (event, sectionId) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      scrollToSection(sectionId);
     }
   };
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+    <Box 
+      onClick={handleDrawerClose} 
+      sx={{ textAlign: 'center' }}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Navigation menu"
+    >
       <Box sx={{ my: 2, display: 'flex', justifyContent: 'center' }}>
         <Logo 
           src="/placemakers/placemakers-logo.svg" 
-          alt="Place Makers" 
-          sx={{ 
-            height: '60px',
-            objectFit: 'contain',
-          }}
+          alt="Placemakers Logo"
         />
       </Box>
       <List>
         {navItems.map((item) => (
-          <ListItem key={item.id} disablePadding>
+          <ListItem 
+            key={item.id} 
+            disablePadding
+            component="li"
+          >
             <Button
-              sx={{ 
-                width: '100%', 
-                py: 1,
-                color: 'text.primary',
-                '&:hover': {
-                  background: (theme) => 
-                    `linear-gradient(45deg, ${theme.palette.primary.main}20 30%, ${theme.palette.secondary.main}20 90%)`,
-                },
-              }}
+              fullWidth
               onClick={() => scrollToSection(item.id)}
+              onKeyDown={(e) => handleKeyDown(e, item.id)}
+              sx={{ textAlign: 'center', py: 1.5 }}
+              aria-label={`Navigate to ${item.title} section`}
             >
               <ListItemText primary={item.title} />
             </Button>
@@ -130,91 +158,101 @@ const Headers = () => {
 
   return (
     <>
+      <a 
+        href="#main-content" 
+        className="skip-link"
+        style={{
+          position: 'absolute',
+          top: '-40px',
+          left: 0,
+          background: '#2B5BA1',
+          color: 'white',
+          padding: '8px',
+          zIndex: 9999,
+          transition: 'top 0.3s',
+        }}
+        onFocus={(e) => {
+          e.target.style.top = '0';
+        }}
+        onBlur={(e) => {
+          e.target.style.top = '-40px';
+        }}
+      >
+        Skip to main content
+      </a>
       <StyledAppBar 
-        position="fixed"
+        position="fixed" 
+        elevation={isScrolled ? 4 : 0}
+        component="nav"
+        aria-label="Main navigation"
         sx={{
-          background: isScrolled ? (theme) => theme.palette.background.default : 'transparent',
-          boxShadow: isScrolled ? 1 : 'none',
-          '& .MuiToolbar-root': {
-            minHeight: { xs: '64px', sm: '72px' }
-          }
+          bgcolor: isScrolled ? 'background.paper' : 'transparent',
+          boxShadow: isScrolled ? 2 : 'none',
         }}
       >
         <Container maxWidth="xl">
-          <StyledToolbar>
+          <StyledToolbar 
+            disableGutters 
+            sx={{ 
+              minHeight: isScrolled ? 64 : 80,
+            }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                onClick={handleDrawerToggle}
-                sx={{ 
-                  mr: 2, 
-                  display: { sm: 'none' },
-                  transition: 'transform 0.2s ease',
-                  '&:hover': {
-                    transform: 'scale(1.1)',
-                  },
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  cursor: 'pointer',
-                }}
-                onClick={() => scrollToSection('home')}
-              >
-                <Logo 
-                  src="/placemakers/placemakers-logo.svg" 
-                  alt="Place Makers"
-                  sx={{
-                    height: { xs: '40px', sm: '50px' },
-                    display: 'block',
-                    objectFit: 'contain',
-                  }}
-                />
-              </Box>
+              <Logo 
+                src="/placemakers/placemakers-logo.svg" 
+                alt="Placemakers Logo"
+                style={{ height: isScrolled ? '40px' : '50px' }}
+              />
             </Box>
             
-            <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2, alignItems: 'center' }}>
+            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
               {navItems.map((item) => (
                 <StyledButton 
                   key={item.id}
-                  color="inherit"
                   onClick={() => scrollToSection(item.id)}
+                  onKeyDown={(e) => handleKeyDown(e, item.id)}
+                  aria-label={`Navigate to ${item.title} section`}
                 >
                   {item.title}
                 </StyledButton>
               ))}
             </Box>
+            
+            <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+              <IconButton
+                color="inherit"
+                aria-label="Open navigation menu"
+                aria-expanded={mobileOpen}
+                aria-controls="mobile-navigation-menu"
+                edge="start"
+                onClick={handleDrawerToggle}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Box>
           </StyledToolbar>
         </Container>
       </StyledAppBar>
-
-      <Drawer
-        variant="temporary"
-        anchor="left"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{
-          keepMounted: true,
-        }}
-        sx={{
-          display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { 
-            boxSizing: 'border-box', 
-            width: 240,
-            background: (theme) => theme.palette.background.default,
-          },
-        }}
-      >
-        {drawer}
-      </Drawer>
-      <Toolbar /> {/* Spacer for fixed AppBar */}
+      
+      <Box component="nav">
+        <Drawer
+          id="mobile-navigation-menu"
+          variant="temporary"
+          open={mobileOpen}
+          onClose={handleDrawerClose}
+          ModalProps={{
+            keepMounted: true, // Better mobile performance
+          }}
+          sx={{
+            display: { xs: 'block', md: 'none' },
+            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+          }}
+        >
+          {drawer}
+        </Drawer>
+      </Box>
+      
+      <Box component="div" sx={{ height: { xs: 56, md: 64 } }} />
     </>
   );
 };
