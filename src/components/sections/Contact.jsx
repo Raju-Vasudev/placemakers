@@ -279,15 +279,27 @@ const Contact = ({ isFormOpen, setIsFormOpen }) => {
 
   const handleCloseForm = () => setIsFormOpen(false);
 
-  const handleSubmit = (formData) => {
-    // Here you would typically send the form data to your backend
-    console.log('Form submitted:', formData);
-    handleCloseForm();
-    setSnackbar({
-      open: true,
-      message: 'Thank you for your message! We will get back to you soon.',
-      severity: 'success',
-    });
+  const handleSubmit = async (formData) => {
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Remove console.log
+      setSnackbar({
+        open: true,
+        message: 'Message sent successfully!',
+        severity: 'success',
+      });
+      
+      handleCloseForm();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSnackbar({
+        open: true,
+        message: 'Failed to send message. Please try again.',
+        severity: 'error',
+      });
+    }
   };
 
   const handleCloseSnackbar = () => {

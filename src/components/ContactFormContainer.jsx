@@ -110,7 +110,6 @@ const ContactFormContainer = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      console.log('Form submitted:', formData);
       setSnackbar({
         open: true,
         message: 'Message sent successfully!',
