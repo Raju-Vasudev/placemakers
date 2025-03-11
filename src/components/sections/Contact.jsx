@@ -270,15 +270,13 @@ const ContactInfo = () => (
   </Box>
 );
 
-const Contact = () => {
-  const [isFormOpen, setIsFormOpen] = useState(false);
+const Contact = ({ isFormOpen, setIsFormOpen }) => {
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success',
   });
 
-  const handleOpenForm = () => setIsFormOpen(true);
   const handleCloseForm = () => setIsFormOpen(false);
 
   const handleSubmit = (formData) => {
@@ -312,31 +310,6 @@ const Contact = () => {
             <ContactInfo />
           </Grid>
         </Grid>
-
-        <Fab
-          color="primary"
-          aria-label="send message"
-          sx={{
-            position: 'fixed',
-            bottom: 32,
-            right: 32,
-            background: (theme) =>
-              `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.secondary.main} 90%)`,
-            '&:hover': {
-              background: (theme) =>
-                `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.secondary.dark} 90%)`,
-            },
-          }}
-          onClick={handleOpenForm}
-        >
-          <MessageIcon />
-        </Fab>
-
-        <ContactForm
-          open={isFormOpen}
-          onClose={handleCloseForm}
-          onSubmit={handleSubmit}
-        />
 
         <Snackbar
           open={snackbar.open}

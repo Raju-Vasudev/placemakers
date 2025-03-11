@@ -4,6 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { useTheme } from './hooks/useTheme';
 import Headers from './components/Headers';
 import { About, Services, Gallery, Clients, Contact, FAQ, Hero } from './components/sections';
+import ContactFormContainer from './components/ContactFormContainer';
 
 function App() {
   const { theme } = useTheme();
@@ -21,8 +22,9 @@ function App() {
         <Contact />
         <FAQ />
       </main>
+      <ContactFormContainer />
     </ThemeProvider>
   );
 }
 
-export default App;
+export default App; 
